@@ -157,6 +157,7 @@
 	"synonym": "類義語",
 	"related_words": "同根語",
 	"etymology": "語源",
+	"morphology": "語源・接辞",
 	"add_word": "単語を追加",
 	"edit_word": "単語を編集",
 	"create_dict": "辞書を作成",

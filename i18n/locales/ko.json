@@ -157,6 +157,7 @@
 	"synonym": "유의어",
 	"related_words": "어근어",
 	"etymology": "어원",
+	"morphology": "형태소",
 	"add_word": "단어 추가",
 	"edit_word": "단어 수정",
 	"create_dict": "사전 만들기",

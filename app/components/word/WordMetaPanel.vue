@@ -26,6 +26,12 @@ import { computed } from 'vue'
 import { watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { getBrowserKey, useTTsPlayAudio } from '@/core/hooks/sound.ts'
+import { decomposeWord } from '@/core/utils/morphology.ts'
+
+const morphResult = computed(() => {
+  if (!settingStore.showMorphology || !props.word?.word) return null
+  return decomposeWord(props.word.word)
+})
 
 const { t: $t } = useI18n()
 
@@ -230,6 +236,31 @@ defineExpose({ startPracticeSentence, playSentence })
       </div>
     </template>
 
+    <!-- 词根词缀拆解 -->
+    <template v-if="morphResult">
+      <div v-opacity="showDetails">
+        <div class="line-white my-2"></div>
+        <div class="flex">
+          <div class="label">{{ $t('morphology') }}</div>
+          <div class="morphology">
+            <div class="morphology-line en">
+              <template v-for="(seg, i) in morphResult.segments" :key="i">
+                <span
+                  class="morph-seg"
+                  :class="[`morph-${seg.type}`, { 'morph-stem': !seg.matched }]"
+                  :title="seg.matched ? `${seg.zh} · ${seg.en}` : undefined"
+                >
+                  <span class="morph-form">{{ seg.text }}</span>
+                  <span v-if="seg.matched" class="morph-meaning">{{ seg.zh }}</span>
+                </span>
+                <span v-if="i < morphResult.segments.length - 1" class="morph-sep">+</span>
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
     <!-- 词源 / 关联词 -->
     <template v-if="settingStore.showEtymologyAndRelWords">
       <template v-if="word?.etymology?.length">
@@ -322,6 +353,62 @@ defineExpose({ startPracticeSentence, playSentence })
   .word-meta .sentence,
   .word-meta .sentence-typing {
     transition-duration: 0.01ms;
+  }
+}
+</style>
+
+<style scoped lang="scss">
+.morphology {
+  .morphology-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem;
+  }
+
+  .morph-seg {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+
+    .morph-form {
+      font-weight: 600;
+    }
+
+    .morph-meaning {
+      font-size: 0.85rem;
+      color: color-mix(in srgb, var(--color-link) 70%, transparent);
+      font-weight: normal;
+    }
+  }
+
+  .morph-prefix .morph-form,
+  .morph-suffix .morph-form {
+    color: var(--color-link);
+  }
+
+  .morph-stem .morph-form {
+    opacity: 0.7;
+  }
+
+  .morph-sep {
+    color: color-mix(in srgb, var(--color-link) 50%, transparent);
+    font-weight: 400;
+    padding: 0 0.1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .morphology {
+    .morphology-line {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.15rem;
+
+      .morph-sep {
+        display: none;
+      }
+    }
   }
 }
 </style>

@@ -43,6 +43,10 @@ const settingStore = useSettingStore()
       <Switch v-model="settingStore.showEtymologyAndRelWords" />
     </SettingItem>
 
+    <SettingItem title="显示词根词缀" desc="自动拆解单词的前缀、词根、后缀并给出释义，离线内置词库">
+      <Switch v-model="settingStore.showMorphology" />
+    </SettingItem>
+
     <SettingItem title="显示练习引导">
       <Switch v-model="settingStore.showUsageTips" />
     </SettingItem>
